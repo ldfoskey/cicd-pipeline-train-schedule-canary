@@ -11,6 +11,9 @@ spec:
   - protocol: TCP
     port: 8082
     nodePort: 8082
+  externalIPs:
+  - 13.57.200.218
+  - 3.101.130.5
 
 ---
 

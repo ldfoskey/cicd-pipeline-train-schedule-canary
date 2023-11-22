@@ -67,10 +67,13 @@ pipeline {
                 milestone(1)
                 withKubeConfig([credentialsId: 'kubeconfig']) {
                     script {
+                        sh 'kubectl delete namespace train-schedule-canary'
+                  }
+              }
+                withKubeConfig([credentialsId: 'kubeconfig']) {
+                    script {
                         sh 'cp ./train-schedule-kube.yml /tmp'
-                        sh 'cp ./train-schedule-kube-canary.yml /tmp'
                         sh 'kubectl create namespace train-schedule'
-                        sh 'kubectl apply -f /tmp/train-schedule-kube-canary.yml && rm /tmp/train-schedule-kube-canary.yml'
                         sh 'kubectl apply -f /tmp/train-schedule-kube.yml && rm /tmp/train-schedule-kube.yml'
                   }
                }

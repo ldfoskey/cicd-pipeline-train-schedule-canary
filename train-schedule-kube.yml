@@ -48,7 +48,7 @@ spec:
     spec:
       containers:
       - name: train-schedule-container
-        image: ldfoskey007/train-schedule:latest
+        image: ldfoskey007/train-schedule:1
         ports:
         - containerPort: 8081
         livenessProbe:

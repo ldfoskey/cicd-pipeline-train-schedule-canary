@@ -1,45 +1,58 @@
 kind: Service
 apiVersion: v1
 metadata:
+  namespace: train-schedule
   name: train-schedule-service
+  annotations:
+    prometheus.io/scrape: 'true'
+  labels:
+    app: train-schedule
+    name: train-schedule    
 spec:
   type: NodePort
   selector:
     app: train-schedule
+    name: train-schedule
   ports:
   - protocol: TCP
-    port: 8080
-    nodePort: 8080
+    port: 8081
+    targetPort: 8081
+    nodePort: 8081
+  externalIPs:
+  - 13.57.200.218
+  - 3.101.130.5
 
 ---
 
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  namespace: train-schedule
   name: train-schedule-deployment
   labels:
     app: train-schedule
+    name: train-schedule    
 spec:
   replicas: 2
   selector:
-    matchLabels:
-      app: train-schedule
-      track: stable
+     matchLabels:
+       app: train-schedule
+       name: train-schedule
   template:
     metadata:
       labels:
         app: train-schedule
-        track: stable
+        name: train-schedule
     spec:
       containers:
-      - name: train-schedule
-        image: $DOCKER_IMAGE_NAME:$BUILD_NUMBER
+      - name: train-schedule-container
+        image: ldfoskey007/train-schedule:latest
         ports:
-        - containerPort: 8080
+        - containerPort: 8081
         livenessProbe:
           httpGet:
             path: /
-            port: 8080
+            port: 8081
           initialDelaySeconds: 15
           timeoutSeconds: 1
           periodSeconds: 10

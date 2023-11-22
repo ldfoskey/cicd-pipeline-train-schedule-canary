@@ -1,7 +1,7 @@
 kind: Service
 apiVersion: v1
 metadata:
-  namespace: train-achedule-canary
+  namespace: train-schedule-canary
   name: train-schedule-service-canary
 spec:
   type: NodePort

@@ -49,7 +49,7 @@ pipeline {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
                     script {
                         sh 'cp ./train-schedule-kube-canary.yml /tmp'
-                        sh 'kubectl create namespace train-schedule'
+                        sh 'kubectl create namespace train-schedule-canary'
                         sh 'kubectl apply -f /tmp/train-schedule-kube-canary.yml && rm /tmp/train-schedule-kube-canary.yml'
                  }
               }

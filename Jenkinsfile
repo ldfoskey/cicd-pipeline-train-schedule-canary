@@ -2,7 +2,7 @@ pipeline {
     agent any
     environment {
         //be sure to replace "willbla" with your own Docker Hub username
-        DOCKER_IMAGE_NAME = "willbla/train-schedule"
+        DOCKER_IMAGE_NAME = "ldfoskey007/train-schedule"
     }
     stages {
         stage('Build') {
@@ -46,12 +46,14 @@ pipeline {
                 CANARY_REPLICAS = 1
             }
             steps {
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube-canary.yml',
-                    enableConfigSubstitution: true
-                )
-            }
+                withKubeConfig([credentialsId: 'kubeconfig']) {
+                    script {
+                        sh 'cp ./train-schedule-kube-canary.yml /tmp'
+                        sh 'kubectl create namespace train-schedule'
+                        sh 'kubectl apply -f /tmp/train-schedule-kube-canary.yml && rm /tmp/train-schedule-kube-canary.yml'
+                 }
+              }
+           }
         }
         stage('DeployToProduction') {
             when {
@@ -63,16 +65,15 @@ pipeline {
             steps {
                 input 'Deploy to Production?'
                 milestone(1)
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube-canary.yml',
-                    enableConfigSubstitution: true
-                )
-                kubernetesDeploy(
-                    kubeconfigId: 'kubeconfig',
-                    configs: 'train-schedule-kube.yml',
-                    enableConfigSubstitution: true
-                )
+                withKubeConfig([credentialsId: 'kubeconfig']) {
+                    script {
+                        sh 'cp ./train-schedule-kube.yml /tmp'
+                        sh 'cp ./train-schedule-kube-canary.yml /tmp'
+                        sh 'kubectl create namespace train-schedule'
+                        sh 'kubectl apply -f /tmp/train-schedule-kube-canary.yml && rm /tmp/train-schedule-kube-canary.yml'
+                        sh 'kubectl apply -f /tmp/train-schedule-kube.yml && rm /tmp/train-schedule-kube.yml'
+                  }
+               }
             }
         }
     }

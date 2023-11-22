@@ -42,9 +42,6 @@ pipeline {
             when {
                 branch 'master'
             }
-            environment { 
-                CANARY_REPLICAS = 1
-            }
             steps {
                 withKubeConfig([credentialsId: 'kubeconfig']) {
                     script {
@@ -58,9 +55,6 @@ pipeline {
         stage('DeployToProduction') {
             when {
                 branch 'master'
-            }
-            environment { 
-                CANARY_REPLICAS = 0
             }
             steps {
                 input 'Deploy to Production?'
